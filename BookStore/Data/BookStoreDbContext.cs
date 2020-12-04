@@ -10,11 +10,12 @@ namespace BookStore.Data
 {
     public class BookStoreDbContext : IdentityDbContext<User>
     {
-
+        DbSet<Book> Books;
+        DbSet<Order> Orders;
+        
         public BookStoreDbContext(DbContextOptions<BookStoreDbContext> options)
             : base(options)
         {
-            Database.EnsureCreated();
 
         }
     }

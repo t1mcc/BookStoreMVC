@@ -41,8 +41,6 @@ namespace BookStore
                 .AddEntityFrameworkStores<BookStoreDbContext>();
                 //.AddDefaultTokenProviders();
 
-            
-
             services.AddControllersWithViews();
         }
 

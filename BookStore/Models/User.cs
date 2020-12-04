@@ -8,6 +8,6 @@ namespace BookStore.Models
 {
     public class User : IdentityUser
     {
-
+        public ICollection<Order> Orders { get; set; }
     }
 }
