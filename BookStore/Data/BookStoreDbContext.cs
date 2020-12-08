@@ -10,9 +10,10 @@ namespace BookStore.Data
 {
     public class BookStoreDbContext : IdentityDbContext<User>
     {
-        DbSet<Book> Books;
-        DbSet<Order> Orders;
-        
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Book> Books { get; set; }
+        public DbSet<BookOrder> BookOrders { get; set; }
+
         public BookStoreDbContext(DbContextOptions<BookStoreDbContext> options)
             : base(options)
         {

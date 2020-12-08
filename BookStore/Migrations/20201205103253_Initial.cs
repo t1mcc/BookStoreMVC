@@ -3,10 +3,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace BookStore.Migrations
 {
-    public partial class Init : Migration
+    public partial class Initial : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+
             migrationBuilder.CreateTable(
                 name: "Book",
                 columns: table => new
@@ -31,17 +32,16 @@ namespace BookStore.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    UserId = table.Column<int>(type: "int", nullable: false),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: true),
                     OrderPlaced = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    OrderFulfilled = table.Column<DateTime>(type: "datetime2", nullable: true),
-                    UserId1 = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    OrderFulfilled = table.Column<DateTime>(type: "datetime2", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Order", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Order_AspNetUsers_UserId1",
-                        column: x => x.UserId1,
+                        name: "FK_Order_AspNetUsers_UserId",
+                        column: x => x.UserId,
                         principalTable: "AspNetUsers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
@@ -85,9 +85,9 @@ namespace BookStore.Migrations
                 column: "OrderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Order_UserId1",
+                name: "IX_Order_UserId",
                 table: "Order",
-                column: "UserId1");
+                column: "UserId");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)

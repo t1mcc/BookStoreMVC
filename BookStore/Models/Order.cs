@@ -8,11 +8,12 @@ namespace BookStore.Models
     public class Order
     {
         public int Id { get; set; }
-        public int UserId { get; set; }
+        public string UserId { get; set; }
         public DateTime OrderPlaced { get; set; }
         public DateTime? OrderFulfilled { get; set; }
         public User User { get; set; }
         public ICollection<BookOrder> BookOrders { get; set; }
+
     }
 
 }

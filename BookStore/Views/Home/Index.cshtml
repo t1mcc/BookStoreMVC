@@ -1,8 +1,37 @@
-﻿@{
+﻿@model IEnumerable<BookStore.Models.Book>;
+
+@{
     ViewData["Title"] = "Home Page";
 }
 
+
 <div class="text-center">
     <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
 </div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Фото</th>
+            <th>Название</th>
+            <th>Описание</th>
+            <th>Автор</th>
+            <th>Цена</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var book in Model)
+        {
+        <tr>
+            <th scope="row">@book.Photo</th>
+            <td>@book.Name</td>
+            <td>@book.Description</td>
+            <td>@book.Author</td>
+            <td>@book.Price</td>
+            <td><a href="/Cart/AddBook/@book.Id">Добавить в корзину</a></td>
+        </tr>
+        }
+    </tbody>
+</table>
+
