@@ -1,0 +1,45 @@
+﻿@model BookStore.Models.Cart.Cart;
+
+@{
+    ViewData["Title"] = "Корзина";
+}
+
+
+@if (Model == null)
+{
+    <h2>Ваша корзина пуста</h2>
+}
+else
+{
+    <div class="text-center">
+        <h2 class="display-4">Корзина</h2>
+    </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Название</th>
+                <th>Цена</th>
+                <th>Количество</th>
+                <th>Общая цена</th>
+                <th>Удалить</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.Items)
+            {
+                <tr>
+                    <th scope="row">@item.Book.Name</th>
+                    <td>@item.Book.Price</td>
+                    <td>@item.Quantity</td>
+                    <td>@(@item.Book.Price * @item.Quantity)</td>
+                    <td>@Html.ActionLink("X", "RemoveItem", "Cart", new { bookId = @item.Book.Id })</td>
+                </tr>
+            }
+            <tr>
+                <td colspan="3">Общая цена:</td>
+                <td colspan="2">@Model.ComputeTotalPrice()</td>
+            </tr>
+        </tbody>
+        
+    </table>
+}

@@ -23,14 +23,14 @@
     <tbody>
         @foreach (var book in Model)
         {
-        <tr>
-            <th scope="row">@book.Photo</th>
-            <td>@book.Name</td>
-            <td>@book.Description</td>
-            <td>@book.Author</td>
-            <td>@book.Price</td>
-            <td><a href="/Cart/AddBook/@book.Id">Добавить в корзину</a></td>
-        </tr>
+            <tr>
+                <th scope="row">@book.Photo</th>
+                <td>@book.Name</td>
+                <td>@book.Description</td>
+                <td>@book.Author</td>
+                <td>@book.Price</td>
+                <td>@Html.ActionLink("Добавить в корзину", "AddBook", "Cart", new { bookId = @book.Id, returnUrl = @Context.Request.Path })</td>
+            </tr>
         }
     </tbody>
 </table>

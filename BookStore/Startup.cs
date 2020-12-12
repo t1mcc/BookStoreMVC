@@ -42,6 +42,9 @@ namespace BookStore
                 //.AddDefaultTokenProviders();
 
             services.AddControllersWithViews();
+
+            services.AddDistributedMemoryCache();
+            services.AddSession();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -57,6 +60,8 @@ namespace BookStore
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
+
+            app.UseSession();
 
             app.UseRouting();
 
