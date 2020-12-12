@@ -12,7 +12,6 @@ namespace BookStore.Models
         public string UserId { get; set; }
         public DateTime OrderPlaced { get; set; }
         public DateTime? OrderFulfilled { get; set; }
-        public User User { get; set; }
 
         [Required(ErrorMessage = "Пожалуйста, введите название страны")]
         public string Country { get; set; }
@@ -22,6 +21,8 @@ namespace BookStore.Models
         public string Address { get; set; }
         [Required(ErrorMessage = "Пожалуйста, введите индекс")]
         public string ZipCode { get; set; }
+
+        public User User { get; set; }
         public ICollection<BookOrder> BookOrders { get; set; }
 
     }

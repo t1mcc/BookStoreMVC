@@ -4,7 +4,6 @@
     ViewData["Title"] = "Корзина";
 }
 
-
 @if (Model == null)
 {
     <h2>Ваша корзина пуста</h2>
@@ -40,6 +39,9 @@ else
                 <td colspan="2">@Model.ComputeTotalPrice()</td>
             </tr>
         </tbody>
-        
+
     </table>
+    <div class="text-center">
+        <a class="btn btn-primary" asp-action="PlaceOrder" asp-controller="Order">Оформить заказ</a>
+    </div>
 }

@@ -39,14 +39,16 @@ namespace BookStore.Controllers
             if (ModelState.IsValid)
             {
                 var userName = await _userManager.FindByEmailAsync(model.Email);
-
                 var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, false);
 
                 if (result.Succeeded)
+                {
                     return RedirectToAction("Index", "Home");
+                }
                 else
+                {
                     ModelState.AddModelError("", "Неправильный логин/пароль");
-
+                }
             }
 
             return View();
@@ -67,7 +69,7 @@ namespace BookStore.Controllers
                     UserName = model.Username,
                     Email = model.Email,
                     PhoneNumber = model.Phone,
-                    // todo
+
                     PhoneNumberConfirmed = true,
                     EmailConfirmed = true
                 };

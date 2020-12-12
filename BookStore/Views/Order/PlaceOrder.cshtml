@@ -1,0 +1,37 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@model BookStore.Models.Order;
+@inject UserManager<User> UserManager;
+
+@{
+    ViewData["Title"] = "Оформление заказа";
+}
+
+
+<div class="row align-items-start">
+    <div class="card bg-light">
+        <article class="card-body mx-auto">
+            <h2>Оформление заказа</h2><hr />
+            <form asp-controller="Order" asp-action="PlaceOrder" method="post">
+                <input type="hidden" name="UserId" value="@UserManager.GetUserId(User)" />
+                <div class="form-group">
+                    <input class="form-control" asp-for="Country" placeholder="Страна" />
+                    <span asp-validation-for="Country"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" asp-for="City" placeholder="Город" />
+                    <span asp-validation-for="City"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" asp-for="Address" placeholder="Адрес" />
+                    <span asp-validation-for="Address"></span>
+                </div>
+                <div class="form-group">
+                    <input class="form-control" asp-for="ZipCode" placeholder="Почтовый индекс" />
+                    <span asp-validation-for="ZipCode"></span>
+                </div>
+                </br>
+                <button class="btn btn-primary" type="submit">Оформить заказ</button>
+            </form>
+        </article>
+    </div>
+</div>
