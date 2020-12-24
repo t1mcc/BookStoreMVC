@@ -4,11 +4,13 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BookStore.Controllers
 {
+
     public class AccountController : Controller
     {
 
@@ -23,9 +25,14 @@ namespace BookStore.Controllers
 
         }
 
-        public IActionResult Index()
-        {
-            return View();
+        [Authorize]
+        public async Task<IActionResult> Index() {
+            var user = await _userManager.GetUserAsync(User);
+            var roles = await _userManager.GetRolesAsync(user);
+
+            string currentUserRole = roles[0];
+
+            return RedirectToAction("Index", currentUserRole);
         }
 
         public IActionResult Login()
@@ -66,7 +73,7 @@ namespace BookStore.Controllers
             {
                 var user = new User
                 {
-                    UserName = model.Username,
+                    UserName = model.UserName,
                     Email = model.Email,
                     PhoneNumber = model.Phone,
 
@@ -78,7 +85,9 @@ namespace BookStore.Controllers
 
                 if (result.Succeeded)
                 {
+                    await _userManager.AddToRoleAsync(user, "User");
                     await _signInManager.SignInAsync(user, false);
+
                     return RedirectToAction("Index", "Home");
                 }
                 else
@@ -91,10 +100,10 @@ namespace BookStore.Controllers
             return View();
         }
 
-        public async Task<IActionResult> LogOut()
+        public async Task<IActionResult> LogOut(string returnUrl)
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction("Index", "Home");
+            return Redirect(returnUrl);
         }
 
     }

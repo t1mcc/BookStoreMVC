@@ -6,27 +6,16 @@ using System.Threading.Tasks;
 
 namespace BookStore.Models.ViewModels
 {
-    public class RegisterViewModel
+    public class UserProfileViewModel
     {
         [Required]
         public string UserName { get; set; }
-
         [Required]
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
-
         [Required]
         [DataType(DataType.PhoneNumber)]
         public string Phone { get; set; }
-
-        [Required]
-        [DataType(DataType.Password)]
-        [StringLength(20, MinimumLength = 6, ErrorMessage = "Пароль слишком короткий")]
-        public string Password { get; set; }
-
-        [Required]
-        [Compare("Password", ErrorMessage = "Пароли не совпадают")]
-        [DataType(DataType.Password)]
-        public string ConfirmPassword { get; set; }
+        public string Role { get; set; }
     }
 }

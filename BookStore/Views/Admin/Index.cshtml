@@ -1,0 +1,34 @@
+﻿@model IEnumerable<BookStore.Models.ViewModels.UserProfileViewModel>;
+
+@{
+    ViewData["Title"] = "Аккаунт";
+}
+
+<div class="row">
+    <div class="col-2">
+        <partial name="_NavPartial" />
+    </div>
+    <div class="col-10">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Имя пользователя</th>
+                    <th>Электронная почта</th>
+                    <th>Номер телефона</th>
+                    <th>Роль</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <th scope="row">@user.UserName</th>
+                        <td>@user.Email</td>
+                        <td>@user.Phone</td>
+                        <td>@user.Role</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

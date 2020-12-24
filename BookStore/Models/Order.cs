@@ -21,7 +21,6 @@ namespace BookStore.Models
         public string Address { get; set; }
         [Required(ErrorMessage = "Пожалуйста, введите индекс")]
         public string ZipCode { get; set; }
-
         public User User { get; set; }
         public ICollection<BookOrder> BookOrders { get; set; }
 

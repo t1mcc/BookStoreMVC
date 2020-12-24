@@ -4,11 +4,6 @@
     ViewData["Title"] = "Home Page";
 }
 
-
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-</div>
-
 <table class="table">
     <thead>
         <tr>
@@ -29,7 +24,8 @@
                 <td>@book.Description</td>
                 <td>@book.Author</td>
                 <td>@book.Price</td>
-                <td>@Html.ActionLink("Добавить в корзину", "AddBook", "Cart", new { bookId = @book.Id, returnUrl = @Context.Request.Path })</td>
+                <td><a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="AddBook" 
+                       asp-route-bookId="@book.Id" asp-route-returnUrl="@Context.Request.Path">Добавить в корзину</a></td>
             </tr>
         }
     </tbody>

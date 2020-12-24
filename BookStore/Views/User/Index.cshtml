@@ -1,0 +1,16 @@
+﻿@model BookStore.Models.ViewModels.UserProfileViewModel;
+
+@{
+    ViewData["Title"] = "Аккаунт";
+}
+
+<div class="row">
+    <div class="col-3">
+        <partial name="_NavPartial" />
+    </div>
+    <div class="col-9">
+        <p>Имя пользователя: @Model.UserName</p>
+        <p>Электронная почта: @Model.Email</p>
+        <p>Номер телефона: @Model.Phone</p>
+    </div>
+</div>

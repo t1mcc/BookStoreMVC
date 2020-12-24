@@ -4,7 +4,7 @@
     ViewData["Title"] = "Корзина";
 }
 
-@if (Model == null)
+@if (Model.Items.Count() == 0)
 {
     <h2>Ваша корзина пуста</h2>
 }

@@ -1,0 +1,5 @@
+﻿<nav class="nav flex-column nav-pills">
+    <a class="nav-link @(Context.Request.Path == "/Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">Список пользователей</a>
+    <a class="nav-link @(Context.Request.Path == "/Admin/ActiveOrders" ? "active" : "")" asp-controller="Admin" asp-action="ActiveOrders">Активные заказы</a>
+    <a class="nav-link @(Context.Request.Path == "/Admin/CompletedOrders" ? "active" : "")" asp-controller="Admin" asp-action="CompletedOrders">Выполненные заказы</a>
+</nav>

@@ -1,0 +1,33 @@
+﻿@model BookStore.Models.ViewModels.UserProfileViewModel;
+
+@{
+    ViewData["Title"] = "Аккаунт";
+}
+
+<div class="row">
+    <div class="col-3">
+        <partial name="_NavPartial" />
+    </div>
+    <form>
+
+    </form>
+    <div class="col-9">
+        <form asp-controller="User" asp-action="ChangeProfile" method="post">
+            <div asp-validation-summary="ModelOnly"></div>
+            <div class="form-group">
+                <input class="form-control" asp-for="UserName" value="@Model.UserName" placeholder="Имя пользователя" />
+                <span asp-validation-for="UserName"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" asp-for="Email" value="@Model.Email" placeholder="Электронный адрес" />
+                <span asp-validation-for="Email"></span>
+            </div>
+            <div class="form-group">
+                <input class="form-control" asp-for="Phone" value="@Model.Phone" placeholder="Номер телефона" />
+                <span asp-validation-for="Phone"></span>
+            </div>
+            </br>
+            <button class="btn btn-primary" type="submit">Сохранить изменения</button>
+        </form>
+    </div>
+</div>
