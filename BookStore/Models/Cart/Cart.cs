@@ -9,7 +9,7 @@ namespace BookStore.Models.Cart
     {
         public List<CartItem> Items { get; set; } = new List<CartItem>();
 
-        public void AddItem(Book book, int quantity) 
+        public virtual void AddItem(Book book, int quantity) 
         {
             var cartItem = Items
                      .Where(item => item.Book.Id == book.Id)
@@ -28,9 +28,9 @@ namespace BookStore.Models.Cart
                 cartItem.Quantity += quantity;
             }
         }
-        public void RemoveItem(int bookId) => Items.RemoveAll(item => item.Book.Id == bookId);
+        public virtual void RemoveItem(int bookId) => Items.RemoveAll(item => item.Book.Id == bookId);
 
-        public void Clear() =>  Items.Clear();
+        public virtual void Clear() =>  Items.Clear();
 
         public decimal ComputeTotalPrice() => Items.Sum(item => item.Book.Price * item.Quantity);
 

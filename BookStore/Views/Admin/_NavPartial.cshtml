@@ -1,5 +1,8 @@
 ﻿<nav class="nav flex-column nav-pills">
     <a class="nav-link @(Context.Request.Path == "/Admin" ? "active" : "")" asp-controller="Admin" asp-action="Index">Список пользователей</a>
+    <a class="nav-link @(Context.Request.Path == "/Admin/AddUser" ? "active" : "")" asp-controller="Admin" asp-action="AddUser">Добавить пользователя</a>
     <a class="nav-link @(Context.Request.Path == "/Admin/ActiveOrders" ? "active" : "")" asp-controller="Admin" asp-action="ActiveOrders">Активные заказы</a>
     <a class="nav-link @(Context.Request.Path == "/Admin/CompletedOrders" ? "active" : "")" asp-controller="Admin" asp-action="CompletedOrders">Выполненные заказы</a>
+    <a class="nav-link @(Context.Request.Path == "/Admin/Books" ? "active" : "")" asp-controller="Admin" asp-action="Books">Список книг</a>
+    <a class="nav-link @(Context.Request.Path == "/Admin/AddBook" ? "active" : "")" asp-controller="Admin" asp-action="AddBook">Добавить книгу</a>
 </nav>

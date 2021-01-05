@@ -4,30 +4,29 @@
     ViewData["Title"] = "Home Page";
 }
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Фото</th>
-            <th>Название</th>
-            <th>Описание</th>
-            <th>Автор</th>
-            <th>Цена</th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var book in Model)
-        {
-            <tr>
-                <th scope="row">@book.Photo</th>
-                <td>@book.Name</td>
-                <td>@book.Description</td>
-                <td>@book.Author</td>
-                <td>@book.Price</td>
-                <td><a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="AddBook" 
-                       asp-route-bookId="@book.Id" asp-route-returnUrl="@Context.Request.Path">Добавить в корзину</a></td>
-            </tr>
-        }
-    </tbody>
-</table>
+@foreach (var book in Model)
+{
+    <div class="row border" style="padding:10px; padding-bottom:15px;
+                                    margin-bottom:5px; background-color:#f9f9f9;">
+        <div class="col-3">
+            <img src="/img/@book.Photo" style="width:200px; height:300px"/>
+        </div>
+        <div class="col-7">
+            <h4><a asp-controller="Home" asp-action="Index" 
+                   asp-route-bookId="@book.Id">@book.Name</a></h4>
+            <p>Описание:<br />@book.Description</p>
+        </div>
+        <div class="col-2">
+            <br />
+            <p>
+
+                Автор: @book.Author<br />
+                Цена: @book.Price руб.
+            </p>
+            <a class="btn btn-success btn-sm" asp-controller="Cart" asp-action="AddBook"
+                asp-route-bookId="@book.Id" asp-route-returnUrl="@Context.Request.Path">Добавить в корзину</a>
+        </div>
+    </div>
+}
+
 

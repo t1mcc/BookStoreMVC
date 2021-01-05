@@ -15,11 +15,12 @@ namespace BookStore.Controllers
     public class OrderController : Controller
     {
         BookStoreDbContext _dbContext;
-        public Cart Cart { get; set; }
+        Cart _cart;
 
-        public OrderController(BookStoreDbContext dbContext)
+        public OrderController(BookStoreDbContext dbContext, Cart cart)
         {
             _dbContext = dbContext;
+            _cart = cart;
         }
 
         [HttpGet]
@@ -31,14 +32,13 @@ namespace BookStore.Controllers
         [HttpPost]
         public IActionResult PlaceOrder(Order order) 
         {
-            Cart = HttpContext.Session.GetJson<Cart>("cart") ?? new Cart();
-            if (Cart.Items.Count == 0)
+            if (_cart.Items.Count == 0)
             {
                 ModelState.AddModelError("", "Ваша корзина пуста!");
             }
             if (ModelState.IsValid)
             {
-                order.BookOrders = Cart.Items.Select(book => new BookOrder
+                order.BookOrders = _cart.Items.Select(book => new BookOrder
                 {
                     BookId = book.Book.Id,
                     Quantity = book.Quantity
@@ -49,12 +49,21 @@ namespace BookStore.Controllers
                 _dbContext.Orders.Add(order);
                 _dbContext.SaveChanges();
 
-                Cart.Clear();
-                HttpContext.Session.SetJson("cart", Cart);
+                _cart.Clear();
 
                 return RedirectToAction("Completed");
             }
             return View();
+        }
+
+        public IActionResult SetOrderFulfield(int orderId, string returnUrl) 
+        {
+            var order = _dbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            order.OrderFulfilled = DateTime.Now;
+
+            _dbContext.SaveChanges();
+
+            return Redirect(returnUrl);
         }
 
         public IActionResult Completed()

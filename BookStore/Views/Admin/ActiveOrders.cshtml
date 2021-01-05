@@ -19,23 +19,26 @@
                         <th>Номер телефона</th>
                         <th>Содержание заказа</th>
                         <th>Адрес доставки</th>
+                        <th>Статус</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach (var order in Model)
                     {
-                        <tr>
-                            <th scope="row">@order.OrderPlaced.ToString()</th>
-                            <td>@order.User.UserName</td>
-                            <td>@order.User.PhoneNumber</td>
-                            <td>
-                                @foreach (var book in order.BookOrders)
-                                {
-                                    <p>@book.Book.Name в кол-ве - @book.Quantity</p>
-                                }
-                            </td>
-                            <td>@order.ZipCode, @order.City, @order.Address</td>
-                        </tr>
+                    <tr>
+                        <th scope="row">@order.OrderPlaced.ToString()</th>
+                        <td>@order.User.UserName</td>
+                        <td>@order.User.PhoneNumber</td>
+                        <td>
+                            @foreach (var book in order.BookOrders)
+                            {
+                                <p>@book.Book.Name в кол-ве - @book.Quantity</p>
+                            }
+                        </td>
+                        <td>@order.ZipCode, @order.City, @order.Address</td>
+                        <td><a class="btn btn-success btn-sm" asp-controller="Order" asp-action="SetOrderFulfield"
+                             asp-route-orderId="@order.Id" asp-route-returnUrl="@Context.Request.Path">Выполнен</a></td>
+                    </tr>
                     }
                 </tbody>
             </table>

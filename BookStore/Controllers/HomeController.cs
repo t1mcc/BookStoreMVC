@@ -21,12 +21,20 @@ namespace BookStore.Controllers
             _logger = logger;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(int? bookId)
         {
-            var books = _dbContext.Books.ToList();
-            if (books == null)
+            List<Book> books;
+            if (bookId == null)
             {
-                return View();
+                books = _dbContext.Books.ToList();
+                if (books == null)
+                {
+                    return View();
+                }
+            }
+            else
+            {
+                books = _dbContext.Books.Where(book => book.Id == bookId).ToList();
             }
 
             return View(books);

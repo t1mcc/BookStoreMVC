@@ -46,16 +46,24 @@ namespace BookStore.Controllers
             if (ModelState.IsValid)
             {
                 var userName = await _userManager.FindByEmailAsync(model.Email);
-                var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, false);
-
-                if (result.Succeeded)
+                if (userName != null)
                 {
-                    return RedirectToAction("Index", "Home");
+                    var result = await _signInManager.PasswordSignInAsync(userName, model.Password, model.RememberMe, false);
+
+                    if (result.Succeeded)
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
+                    else
+                    {
+                        ModelState.AddModelError("", "Неправильный логин/пароль");
+                    }
                 }
                 else
                 {
-                    ModelState.AddModelError("", "Неправильный логин/пароль");
+                    ModelState.AddModelError("", "Пользователя с таким электронным адресом не существует!");
                 }
+
             }
 
             return View();

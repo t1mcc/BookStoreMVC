@@ -4,8 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using BookStore.Data;
 using BookStore.Models;
+using BookStore.Models.Cart;
+using BookStore.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -42,9 +45,11 @@ namespace BookStore
                 //.AddDefaultTokenProviders();
 
             services.AddControllersWithViews();
-
+            
             services.AddDistributedMemoryCache();
             services.AddSession();
+            services.AddScoped<Cart>(x => CartService.GetCart(x));
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

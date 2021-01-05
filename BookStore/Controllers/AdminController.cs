@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 using BookStore.Data;
 using BookStore.Models;
@@ -41,21 +43,149 @@ namespace BookStore.Controllers
 
         public IActionResult ActiveOrders()
         {
-            var orders = GetOrders(false);
+            var orders = GetOrders(x => x.OrderFulfilled == null);
 
             return View(orders);
         }
 
         public IActionResult CompletedOrders() 
         {
-            var orders = GetOrders(true);
+            var orders = GetOrders(x => x.OrderFulfilled != null);
 
             return View(orders);
         }
-
-        private IEnumerable<Order> GetOrders(bool onlyCompletedOrders)
+        
+        public IActionResult AddUser() 
         {
-            return _dbContext.Orders.Where(x => (x.OrderFulfilled == null) != onlyCompletedOrders)
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddUser(RegisterViewModel model, string role) {
+            if (ModelState.IsValid)
+            {
+                var user = new User
+                {
+                    UserName = model.UserName,
+                    Email = model.Email,
+                    PhoneNumber = model.Phone,
+                    PhoneNumberConfirmed = true,
+                    EmailConfirmed = true
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
+                if (result.Succeeded)
+                {
+                    await _userManager.AddToRoleAsync(user, role);
+                    return RedirectToAction("Index");
+                }
+                else
+                {
+                    foreach (var error in result.Errors)
+                        ModelState.AddModelError(string.Empty, error.Description);
+                }
+            }
+
+            return View();
+        }
+
+        public IActionResult Books()
+        {
+            var books = _dbContext.Books.ToList();
+            return View(books);
+        }
+
+        public IActionResult AddBook()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult AddBook(BookViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", model.Photo.FileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    model.Photo.CopyTo(fileStream);
+                }
+
+                var book = new Book
+                {
+                    Name = model.Name,
+                    Author = model.Author,
+                    Category = model.Category,
+                    Description = model.Description,
+                    Price = model.Price,
+                    Photo = model.Photo.FileName
+                };
+
+                _dbContext.Books.Add(book);
+                _dbContext.SaveChanges();
+            }
+
+            return View();
+        }
+
+        public IActionResult EditBook(int bookId) 
+        {
+            ViewBag.bookId = bookId;
+            var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
+            
+            var model = new BookViewModel
+            {
+                Name = book.Name,
+                Author = book.Author,
+                Category = book.Category,
+                Description = book.Description,
+                Price = book.Price
+            };
+
+            return View(model);
+        }
+
+        [HttpPost]
+        public IActionResult EditBook(BookViewModel model, int bookId)
+        {
+            if (ModelState.IsValid)
+            {
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/img", model.Photo.FileName);
+                using (var fileStream = new FileStream(path, FileMode.Create))
+                {
+                    model.Photo.CopyTo(fileStream);
+                }
+
+                var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
+
+                book.Name = model.Name;
+                book.Author = model.Author;
+                book.Category = model.Category;
+                book.Description = model.Description;
+                book.Price = model.Price;
+                book.Photo = model.Photo.FileName;
+
+                _dbContext.Books.Update(book);
+                _dbContext.SaveChanges();
+            }
+
+            return RedirectToAction("Books");
+        }
+
+        public IActionResult DeleteBook(int bookId)
+        {
+            var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
+
+            _dbContext.Books.Remove(book);
+            _dbContext.SaveChanges();
+
+            return RedirectToAction("Books");
+        }
+
+        private IEnumerable<Order> GetOrders(Expression<Func<Order, bool>> @where)
+        {
+            return _dbContext.Orders.Where(where)
                               .Include("User")
                               .Include("BookOrders")
                               .Include("BookOrders.Book")

@@ -1,0 +1,47 @@
+﻿@model IEnumerable<BookStore.Models.Book>;
+
+@{
+    ViewData["Title"] = "Аккаунт";
+}
+
+<div class="row">
+    <div class="col-2">
+        <partial name="_NavPartial" />
+    </div>
+    <div class="col-10">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Название книги</th>
+                    <th>Категория</th>
+                    <th>Автор</th>
+                    <th>Цена</th>
+                    <th></th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var book in Model)
+                {
+                <tr>
+                    <th scope="row">
+                        <a asp-controller="Home" asp-action="Index" 
+                           asp-route-bookId="@book.Id">@book.Name</a>
+                    </th>
+                    <td>@book.Category</td>
+                    <td>@book.Author</td>
+                    <td>@book.Price</td>
+                    <td>
+                        <a class="btn btn-success btn-sm" asp-controller="Admin" asp-action="EditBook"
+                           asp-route-bookId="@book.Id">Редактировать</a>
+                    </td>
+                    <td>
+                        <a class="btn btn-danger btn-sm" asp-controller="Admin" asp-action="DeleteBook"
+                           asp-route-bookId="@book.Id">Удалить</a>
+                    </td>
+                </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
