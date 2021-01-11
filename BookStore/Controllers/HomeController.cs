@@ -7,26 +7,27 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using BookStore.Models;
 using BookStore.Data;
+using BookStore.Repositories.Interfaces;
 
 namespace BookStore.Controllers
 {
     public class HomeController : Controller
     {
-        BookStoreDbContext _dbContext;
         private readonly ILogger<HomeController> _logger;
+        private readonly IBookRepository _bookRepository;
 
-        public HomeController(BookStoreDbContext dbContext, ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IBookRepository bookRepository)
         {
-            _dbContext = dbContext;
             _logger = logger;
+            _bookRepository = bookRepository;
         }
 
-        public IActionResult Index(int? bookId)
+        public async Task<IActionResult> Index(int? bookId)
         {
             List<Book> books;
             if (bookId == null)
             {
-                books = _dbContext.Books.ToList();
+                books = await _bookRepository.GetAll();
                 if (books == null)
                 {
                     return View();
@@ -34,7 +35,9 @@ namespace BookStore.Controllers
             }
             else
             {
-                books = _dbContext.Books.Where(book => book.Id == bookId).ToList();
+                books = new List<Book>();
+                var book = await _bookRepository.GetById((int)bookId);
+                books.Add(book);
             }
 
             return View(books);

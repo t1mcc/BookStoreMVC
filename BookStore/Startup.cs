@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using BookStore.Data;
 using BookStore.Models;
 using BookStore.Models.Cart;
+using BookStore.Repositories;
+using BookStore.Repositories.Interfaces;
 using BookStore.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -48,8 +50,12 @@ namespace BookStore
             
             services.AddDistributedMemoryCache();
             services.AddSession();
+
             services.AddScoped<Cart>(x => CartService.GetCart(x));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+            services.AddScoped<IBookRepository, EFBookRepository>();
+            services.AddScoped<IOrderRepository, EFOrderRepository>();
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

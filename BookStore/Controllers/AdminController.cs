@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using BookStore.Data;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
+using BookStore.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -18,13 +19,16 @@ namespace BookStore.Controllers
     [Authorize(Roles = "Admin")]
     public class AdminController : Controller
     {
-        UserManager<User> _userManager;
-        BookStoreDbContext _dbContext;
+        private readonly UserManager<User> _userManager;
+        private readonly IOrderRepository _orderRepository;
+        private readonly IBookRepository _bookRepository;
 
-        public AdminController(UserManager<User> userManager, BookStoreDbContext dbContext)
+        public AdminController(UserManager<User> userManager, IOrderRepository orderRepository, 
+                               IBookRepository bookRepository)
         {
             _userManager = userManager;
-            _dbContext = dbContext;
+            _orderRepository = orderRepository;
+            _bookRepository = bookRepository;
         }
 
         public IActionResult Index()
@@ -41,16 +45,16 @@ namespace BookStore.Controllers
             return View(users);
         }
 
-        public IActionResult ActiveOrders()
+        public async Task<IActionResult> ActiveOrders()
         {
-            var orders = GetOrders(x => x.OrderFulfilled == null);
+            var orders = await _orderRepository.GetOrders(x => x.OrderFulfilled == null);
 
             return View(orders);
         }
 
-        public IActionResult CompletedOrders() 
+        public async Task<IActionResult> CompletedOrders() 
         {
-            var orders = GetOrders(x => x.OrderFulfilled != null);
+            var orders = await _orderRepository.GetOrders(x => x.OrderFulfilled != null);
 
             return View(orders);
         }
@@ -90,9 +94,9 @@ namespace BookStore.Controllers
             return View();
         }
 
-        public IActionResult Books()
+        public async Task<IActionResult> Books()
         {
-            var books = _dbContext.Books.ToList();
+            var books = await _bookRepository.GetAll();
             return View(books);
         }
 
@@ -102,7 +106,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddBook(BookViewModel model)
+        public async Task<IActionResult> AddBook(BookViewModel model)
         {
             if (ModelState.IsValid)
             {
@@ -122,17 +126,16 @@ namespace BookStore.Controllers
                     Photo = model.Photo.FileName
                 };
 
-                _dbContext.Books.Add(book);
-                _dbContext.SaveChanges();
+                await _bookRepository.Add(book);
             }
 
             return View();
         }
 
-        public IActionResult EditBook(int bookId) 
+        public async Task<IActionResult> EditBook(int bookId) 
         {
             ViewBag.bookId = bookId;
-            var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
+            var book = await _bookRepository.GetById(bookId);
             
             var model = new BookViewModel
             {
@@ -147,7 +150,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
-        public IActionResult EditBook(BookViewModel model, int bookId)
+        public async Task<IActionResult> EditBook(BookViewModel model, int bookId)
         {
             if (ModelState.IsValid)
             {
@@ -157,7 +160,7 @@ namespace BookStore.Controllers
                     model.Photo.CopyTo(fileStream);
                 }
 
-                var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
+                var book = await _bookRepository.GetById(bookId);
 
                 book.Name = model.Name;
                 book.Author = model.Author;
@@ -166,30 +169,17 @@ namespace BookStore.Controllers
                 book.Price = model.Price;
                 book.Photo = model.Photo.FileName;
 
-                _dbContext.Books.Update(book);
-                _dbContext.SaveChanges();
+                await _bookRepository.Update(book);
             }
 
             return RedirectToAction("Books");
         }
 
-        public IActionResult DeleteBook(int bookId)
+        public async Task<IActionResult> DeleteBook(int bookId)
         {
-            var book = _dbContext.Books.FirstOrDefault(book => book.Id == bookId);
-
-            _dbContext.Books.Remove(book);
-            _dbContext.SaveChanges();
-
+            await _bookRepository.Delete(bookId);
             return RedirectToAction("Books");
         }
 
-        private IEnumerable<Order> GetOrders(Expression<Func<Order, bool>> @where)
-        {
-            return _dbContext.Orders.Where(where)
-                              .Include("User")
-                              .Include("BookOrders")
-                              .Include("BookOrders.Book")
-                              .ToList();
-        }
     }
 }

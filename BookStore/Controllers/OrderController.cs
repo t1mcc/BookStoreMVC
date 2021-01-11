@@ -6,6 +6,7 @@ using BookStore.Data;
 using BookStore.Extensions;
 using BookStore.Models;
 using BookStore.Models.Cart;
+using BookStore.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -14,13 +15,13 @@ namespace BookStore.Controllers
     [Authorize]
     public class OrderController : Controller
     {
-        BookStoreDbContext _dbContext;
-        Cart _cart;
+        private readonly Cart _cart;
+        private readonly IOrderRepository _orderRepository;
 
-        public OrderController(BookStoreDbContext dbContext, Cart cart)
+        public OrderController(Cart cart, IOrderRepository orderRepository)
         {
-            _dbContext = dbContext;
             _cart = cart;
+            _orderRepository = orderRepository;
         }
 
         [HttpGet]
@@ -30,7 +31,7 @@ namespace BookStore.Controllers
         }
 
         [HttpPost]
-        public IActionResult PlaceOrder(Order order) 
+        public async Task<IActionResult> PlaceOrder(Order order) 
         {
             if (_cart.Items.Count == 0)
             {
@@ -46,8 +47,7 @@ namespace BookStore.Controllers
 
                 order.OrderPlaced = DateTime.Now;
 
-                _dbContext.Orders.Add(order);
-                _dbContext.SaveChanges();
+                await _orderRepository.Add(order);
 
                 _cart.Clear();
 
@@ -56,12 +56,12 @@ namespace BookStore.Controllers
             return View();
         }
 
-        public IActionResult SetOrderFulfield(int orderId, string returnUrl) 
+        public async Task<IActionResult> SetOrderFulfield(int orderId, string returnUrl) 
         {
-            var order = _dbContext.Orders.FirstOrDefault(x => x.Id == orderId);
+            var order = await _orderRepository.GetById(orderId);
             order.OrderFulfilled = DateTime.Now;
 
-            _dbContext.SaveChanges();
+            await _orderRepository.Update(order);
 
             return Redirect(returnUrl);
         }

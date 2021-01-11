@@ -1,50 +1,55 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Security.Claims;
 using System.Threading.Tasks;
-using BookStore.Data;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
+using BookStore.Repositories.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace BookStore.Controllers
 {
     [Authorize(Roles = "User")]
     public class UserController : Controller
     {
-        UserManager<User> _userManager;
-        BookStoreDbContext _dbContext;
+        private readonly UserManager<User> _userManager;
+        private readonly IOrderRepository _orderRepository;
 
-        public UserController(UserManager<User> userManager, BookStoreDbContext dbContext)
+        public UserController(UserManager<User> userManager, IOrderRepository orderRepository)
         {
             _userManager = userManager;
-            _dbContext = dbContext;
+            _orderRepository = orderRepository;
         }
 
         public async Task<IActionResult> Index()
         {
-            var model = await GetUserInfo(User);
+            var user = await _userManager.GetUserAsync(User);
+            var model = new UserProfileViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Phone = user.PhoneNumber
+            };
 
             return View(model);
         }
 
-        public IActionResult Orders() {
+        public async Task<IActionResult> Orders() {
             var userId = User.FindFirst(ClaimTypes.NameIdentifier).Value;
-            var orders = _dbContext.Orders.Where(x => x.UserId == userId)
-                                          .Include("BookOrders")
-                                          .Include("BookOrders.Book")
-                                          .ToList();
+            var orders = await _orderRepository.GetUserOrders(userId);
 
             return View(orders);
         }
 
         public async Task<IActionResult> ChangeProfile()
         {
-            var model = await GetUserInfo(User);
+            var user = await _userManager.GetUserAsync(User);
+            var model = new UserProfileViewModel
+            {
+                UserName = user.UserName,
+                Email = user.Email,
+                Phone = user.PhoneNumber
+            };
 
             return View(model);
         }
@@ -78,15 +83,5 @@ namespace BookStore.Controllers
             return View();
         }
 
-        private async Task<UserProfileViewModel> GetUserInfo(ClaimsPrincipal userClaimsPrincipal) {
-            var user = await _userManager.GetUserAsync(userClaimsPrincipal);
-
-            return new UserProfileViewModel
-                    {
-                        UserName = user.UserName,
-                        Email = user.Email,
-                        Phone = user.PhoneNumber
-                    };
-        }
     }
 }

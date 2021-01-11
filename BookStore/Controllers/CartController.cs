@@ -6,6 +6,7 @@ using BookStore.Data;
 using BookStore.Extensions;
 using BookStore.Models;
 using BookStore.Models.Cart;
+using BookStore.Repositories.Interfaces;
 using BookStore.Services;
 using Microsoft.AspNetCore.Mvc;
 
@@ -13,13 +14,13 @@ namespace BookStore.Controllers
 {
     public class CartController : Controller
     {
-        BookStoreDbContext _dbContext;
-        Cart _cart;
+        private readonly Cart _cart;
+        private readonly IBookRepository _bookRepository;
 
-        public CartController(BookStoreDbContext dbContext, Cart cart)
+        public CartController(Cart cart, IBookRepository bookRepository)
         {
-            _dbContext = dbContext;
             _cart = cart;
+            _bookRepository = bookRepository;
         }
 
         public IActionResult Index()
@@ -27,11 +28,10 @@ namespace BookStore.Controllers
             return View(_cart);
         }
 
-        public IActionResult AddBook(string returnUrl, int bookId, int quantity = 1)
+        public async Task<IActionResult> AddBook(string returnUrl, int bookId, int quantity = 1)
         {
             returnUrl = returnUrl ?? "/";
-            Book book = _dbContext.Books
-                        .FirstOrDefault(book => book.Id == bookId);
+            var book = await _bookRepository.GetById(bookId);
 
             _cart.AddItem(book, quantity);
 
