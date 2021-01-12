@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
@@ -13,16 +14,17 @@ namespace BookStore.Controllers
 
     public class AccountController : Controller
     {
-
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
+        private readonly IMapper _mapper;
 
         public AccountController(UserManager<User> userManager,
-                                 SignInManager<User> signInManager)
+                                 SignInManager<User> signInManager,
+                                 IMapper mapper)
         {
             _userManager = userManager;
             _signInManager = signInManager;
-
+            _mapper = mapper;
         }
 
         [Authorize]
@@ -31,7 +33,6 @@ namespace BookStore.Controllers
             var roles = await _userManager.GetRolesAsync(user);
 
             string currentUserRole = roles[0];
-
             return RedirectToAction("Index", currentUserRole);
         }
 
@@ -79,16 +80,7 @@ namespace BookStore.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new User
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    PhoneNumber = model.Phone,
-
-                    PhoneNumberConfirmed = true,
-                    EmailConfirmed = true
-                };
-                    
+                var user = _mapper.Map<User>(model);
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)

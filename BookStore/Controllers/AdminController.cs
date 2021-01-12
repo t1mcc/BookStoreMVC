@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using AutoMapper;
 using BookStore.Data;
 using BookStore.Models;
 using BookStore.Models.ViewModels;
@@ -22,40 +23,33 @@ namespace BookStore.Controllers
         private readonly UserManager<User> _userManager;
         private readonly IOrderRepository _orderRepository;
         private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
         public AdminController(UserManager<User> userManager, IOrderRepository orderRepository, 
-                               IBookRepository bookRepository)
+                               IBookRepository bookRepository, IMapper mapper)
         {
             _userManager = userManager;
             _orderRepository = orderRepository;
             _bookRepository = bookRepository;
+            _mapper = mapper;
         }
 
         public IActionResult Index()
         {
-            var users = _userManager.Users.ToList()
-            .Select(x => new UserProfileViewModel
-            {
-                UserName = x.UserName,
-                Email = x.Email,
-                Phone = x.PhoneNumber,
-                Role = _userManager.GetRolesAsync(x).Result[0]
-            });
-
-            return View(users);
+            var users = _userManager.Users.ToList();
+            var userProfiles = _mapper.Map<IEnumerable<UserProfileViewModel>>(users);
+            return View(userProfiles);
         }
 
         public async Task<IActionResult> ActiveOrders()
         {
             var orders = await _orderRepository.GetOrders(x => x.OrderFulfilled == null);
-
             return View(orders);
         }
 
         public async Task<IActionResult> CompletedOrders() 
         {
             var orders = await _orderRepository.GetOrders(x => x.OrderFulfilled != null);
-
             return View(orders);
         }
         
@@ -68,15 +62,7 @@ namespace BookStore.Controllers
         public async Task<IActionResult> AddUser(RegisterViewModel model, string role) {
             if (ModelState.IsValid)
             {
-                var user = new User
-                {
-                    UserName = model.UserName,
-                    Email = model.Email,
-                    PhoneNumber = model.Phone,
-                    PhoneNumberConfirmed = true,
-                    EmailConfirmed = true
-                };
-
+                var user = _mapper.Map<User>(model);
                 var result = await _userManager.CreateAsync(user, model.Password);
 
                 if (result.Succeeded)
@@ -116,36 +102,19 @@ namespace BookStore.Controllers
                     model.Photo.CopyTo(fileStream);
                 }
 
-                var book = new Book
-                {
-                    Name = model.Name,
-                    Author = model.Author,
-                    Category = model.Category,
-                    Description = model.Description,
-                    Price = model.Price,
-                    Photo = model.Photo.FileName
-                };
-
+                var book = _mapper.Map<Book>(model);
                 await _bookRepository.Add(book);
             }
 
-            return View();
+            return RedirectToAction("Books");
         }
 
         public async Task<IActionResult> EditBook(int bookId) 
         {
             ViewBag.bookId = bookId;
-            var book = await _bookRepository.GetById(bookId);
-            
-            var model = new BookViewModel
-            {
-                Name = book.Name,
-                Author = book.Author,
-                Category = book.Category,
-                Description = book.Description,
-                Price = book.Price
-            };
 
+            var book = await _bookRepository.GetById(bookId);
+            var model = _mapper.Map<BookViewModel>(book);
             return View(model);
         }
 
@@ -160,14 +129,8 @@ namespace BookStore.Controllers
                     model.Photo.CopyTo(fileStream);
                 }
 
-                var book = await _bookRepository.GetById(bookId);
-
-                book.Name = model.Name;
-                book.Author = model.Author;
-                book.Category = model.Category;
-                book.Description = model.Description;
-                book.Price = model.Price;
-                book.Photo = model.Photo.FileName;
+                var book = _mapper.Map<Book>(model);
+                book.Id = bookId;
 
                 await _bookRepository.Update(book);
             }

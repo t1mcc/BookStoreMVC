@@ -34,19 +34,16 @@ namespace BookStore.Controllers
             var book = await _bookRepository.GetById(bookId);
 
             _cart.AddItem(book, quantity);
-
             return Redirect(returnUrl);
         }
 
         public IActionResult RemoveItem(int bookId) {
             _cart.RemoveItem(bookId);
-
             return RedirectToAction("Index");
         }
 
         public IActionResult Clear() {
             _cart.Clear();
-
             return RedirectToAction("Index");
         }
 

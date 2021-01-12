@@ -15,7 +15,7 @@ namespace BookStore.Models.ViewModels
         public string Email { get; set; }
         [Required]
         [DataType(DataType.PhoneNumber)]
-        public string Phone { get; set; }
+        public string PhoneNumber { get; set; }
         public string Role { get; set; }
     }
 }

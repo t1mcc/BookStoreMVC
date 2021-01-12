@@ -44,13 +44,11 @@ namespace BookStore.Controllers
                     BookId = book.Book.Id,
                     Quantity = book.Quantity
                 }).ToList();
-
                 order.OrderPlaced = DateTime.Now;
 
                 await _orderRepository.Add(order);
 
                 _cart.Clear();
-
                 return RedirectToAction("Completed");
             }
             return View();
@@ -62,7 +60,6 @@ namespace BookStore.Controllers
             order.OrderFulfilled = DateTime.Now;
 
             await _orderRepository.Update(order);
-
             return Redirect(returnUrl);
         }
 

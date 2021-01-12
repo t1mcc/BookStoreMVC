@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using BookStore.Data;
 using BookStore.Models;
 using BookStore.Models.Cart;
@@ -50,6 +51,8 @@ namespace BookStore
             
             services.AddDistributedMemoryCache();
             services.AddSession();
+
+            services.AddAutoMapper(typeof(MapperProfiles));
 
             services.AddScoped<Cart>(x => CartService.GetCart(x));
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
